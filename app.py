@@ -1,11 +1,13 @@
 from flask import Flask, jsonify, request
 #from flask_jwt_extended import JWTManager
 from flask_restful import Api
-import jwt
+from flask_jwt_extended import JWTManager
+# import jwt
 
 from controller.user import NewUser, GetUsers, GetUser, PromoteUser, DeleteUser
 from controller.address import NewAddress, UpdateAddress
 from controller.login import Login
+from controller.blacklist import BLACKLIST
 
 
 app = Flask(__name__)
@@ -17,6 +19,16 @@ app.config['JWT_BLACKLIST_ENABLED'] = True
 @app.before_first_request
 def cria_banco():
     db.create_all()
+
+jwt = JWTManager(app)
+
+@jwt.token_in_blacklist_loader
+def verify_blacklist(token):
+    return token['jti'] in BLACKLIST
+
+@jwt.revoked_token_loader
+def invalid_token():
+    return jsonify({'message':'You are not logged in.'}), 401
 
 #--------------------------Endpoints--------------------------#
 api = Api(app)

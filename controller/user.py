@@ -5,36 +5,37 @@ from functools import wraps
 from flask import jsonify, request
 from flask_restful import Resource
 from werkzeug.security import check_password_hash, generate_password_hash
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from controller.sql_alchemy import db
 from model.user import UserModel
 from model.address import AddressModel
 
 
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
+# def token_required(f):
+#     @wraps(f)
+#     def decorated(*args, **kwargs):
+#         token = None
 
-        print("\n")
-        print("Request Headers Data:\n")
-        print(request.headers)
-        print("\n")
+#         print("\n")
+#         print("Request Headers Data:\n")
+#         print(request.headers)
+#         print("\n")
 
-        if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
+#         if 'x-access-token' in request.headers:
+#             token = request.headers['x-access-token']
         
-        if not token:
-            return jsonify({'message': 'Token is missing.'})
+#         if not token:
+#             return jsonify({'message': 'Token is missing.'})
         
-        try:
-            data = jwt.decode(token, key='DontTellAnyone')
-            current_user = UserModel.query.filter_by(public_id=data['public_id']).first()
-        except:
-            return jsonify({'message': 'Token is invalid'}), 401
-        return f(current_user, *args, **kwargs)
+#         try:
+#             data = jwt.decode(token, key='DontTellAnyone')
+#             current_user = UserModel.query.filter_by(public_id=data['public_id']).first()
+#         except:
+#             return jsonify({'message': 'Token is invalid'}), 401
+#         return f(current_user, *args, **kwargs)
 
-    return decorated
+#     return decorated
 
 
 class NewUser(Resource):
@@ -70,8 +71,16 @@ class NewUser(Resource):
 
 
 class GetUsers(Resource):
-    @token_required
-    def get(current_user, self):
+    @jwt_required
+    def get(self):
+
+        public_id = get_jwt_identity()
+
+        '''
+        TODO: terminar de implementar este método
+        '''
+
+        current_user = UserModel.query.filter_by(public_id=public_id).first()
 
         if not current_user.admin:
             return jsonify({'message':'You are not allow to perform this action.'})
@@ -94,8 +103,12 @@ class GetUsers(Resource):
 
 
 class GetUser(Resource):
-    @token_required
-    def get(current_user, self, public_id):
+    @jwt_required
+    def get(self, public_id):
+
+        session_public_id = get_jwt_identity()
+
+        current_user = UserModel.query.filter_by(public_id=public_id).first()
 
         if not current_user.admin:
             return jsonify({'message':'You are not allow to perform this action.'})
@@ -130,8 +143,12 @@ class GetUser(Resource):
 
 
 class PromoteUser(Resource):
-    @token_required
-    def put(current_user, public_id, self):
+    @jwt_required
+    def put(self, public_id):
+
+        session_public_id = get_jwt_identity()
+
+        current_user = UserModel.query.filter_by(public_id=public_id).first()
 
         if not current_user.admin:
             return jsonify({'message':'You are not allow to perform this action.'})
@@ -148,8 +165,12 @@ class PromoteUser(Resource):
 
 
 class DeleteUser(Resource):
-    @token_required
-    def delete(current_user, self, public_id):
+    # @token_required
+    def delete(self, public_id):
+
+        session_public_id = get_jwt_identity()
+
+        current_user = UserModel.query.filter_by(public_id=public_id).first()
 
         if not current_user.admin:
             return jsonify({'message':'You are not allow to perform this action.'})
