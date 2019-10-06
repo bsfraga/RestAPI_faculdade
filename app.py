@@ -1,14 +1,11 @@
 from flask import Flask, jsonify, request
-#from flask_jwt_extended import JWTManager
-from flask_restful import Api
 from flask_jwt_extended import JWTManager
-# import jwt
+from flask_restful import Api
 
-from controller.user import NewUser, GetUsers, GetUser, PromoteUser, DeleteUser
 from controller.address import NewAddress, UpdateAddress
-from controller.login import Login
 from controller.blacklist import BLACKLIST
-
+from controller.login import Login
+from controller.user import DeleteUser, GetUser, GetUsers, NewUser, PromoteUser
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -19,7 +16,7 @@ app.config['JWT_BLACKLIST_ENABLED'] = True
 @app.before_first_request
 def cria_banco():
     db.create_all()
-
+#--------------------------JWT Configuration------------------#
 jwt = JWTManager(app)
 
 @jwt.token_in_blacklist_loader
@@ -29,6 +26,7 @@ def verify_blacklist(token):
 @jwt.revoked_token_loader
 def invalid_token():
     return jsonify({'message':'You are not logged in.'}), 401
+#-------------------------------------------------------------#
 
 #--------------------------Endpoints--------------------------#
 api = Api(app)
@@ -44,7 +42,6 @@ api.add_resource(GetUsers, '/users')
 api.add_resource(GetUser, '/user/<public_id>')
 api.add_resource(PromoteUser, '/user/<public_id>')
 api.add_resource(DeleteUser, '/user/<public_id>')
-
 #-------------------------------------------------------------#
 
 if __name__ == '__main__':

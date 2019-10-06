@@ -1,50 +1,20 @@
 import uuid
-import jwt
 from functools import wraps
 
+import jwt
 from flask import jsonify, request
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_restful import Resource
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from controller.sql_alchemy import db
-from model.user import UserModel
 from model.address import AddressModel
-
-
-# def token_required(f):
-#     @wraps(f)
-#     def decorated(*args, **kwargs):
-#         token = None
-
-#         print("\n")
-#         print("Request Headers Data:\n")
-#         print(request.headers)
-#         print("\n")
-
-#         if 'x-access-token' in request.headers:
-#             token = request.headers['x-access-token']
-        
-#         if not token:
-#             return jsonify({'message': 'Token is missing.'})
-        
-#         try:
-#             data = jwt.decode(token, key='DontTellAnyone')
-#             current_user = UserModel.query.filter_by(public_id=data['public_id']).first()
-#         except:
-#             return jsonify({'message': 'Token is invalid'}), 401
-#         return f(current_user, *args, **kwargs)
-
-#     return decorated
+from model.user import UserModel
 
 
 class NewUser(Resource):
     def post(self):
         data = request.get_json()
-        print("\n")
-        print("Login Data:\n")
-        print(data)
-        print("\n")
 
         hashed_password = generate_password_hash(data['password'], method='sha256')
 
@@ -80,24 +50,38 @@ class GetUsers(Resource):
         TODO: terminar de implementar este método
         '''
 
+        #recebe todas rows de users cadastrado
+        users = UserModel.query.all()
+        #recebe todas rows de address cadastrado
+        adresses = AddressModel.query.all()
+
+        output = []
+
+        for user_row in users:
+            for address_row in adresses:
+                if user_row.id == address_row.user_id:
+                    address = {}
+                    address['public_id'] = address_row.public_id
+                    address['federal_unity'] = address_row.federal_unity
+                    address['postal_code'] = address_row.postal_code
+                    address['city'] = address_row.city
+                    address['district'] = address_row.district
+                    address['street'] = address_row.street
+                    address['number'] = address_row.number
+                    address['phone'] = address_row.phone
+            user_data = {}
+            user_data['public_id'] = user_row.public_id
+            user_data['name'] = user_row.name
+            user_data['username'] = user_row.username
+            user_data['email'] = user_row.email
+            user_data['address'] = address
+            output.append(user_data)
+        
+
         current_user = UserModel.query.filter_by(public_id=public_id).first()
 
         if not current_user.admin:
             return jsonify({'message':'You are not allow to perform this action.'})
-
-        users = UserModel.query.all()
-
-        output = []
-
-        for user in users:
-            user_data = {}
-            user_data['public_id'] = user.public_id
-            user_data['name'] = user.name
-            user_data['username'] = user.username
-            user_data['email'] = user.email
-            user_data['address'] = user.address
-            
-            output.append(user_data)
 
         return jsonify({'users': output})
 
@@ -164,8 +148,9 @@ class PromoteUser(Resource):
         return jsonify({'message': f'The user {user.name} has been promoted to Admin.'}, 404)
 
 
+
 class DeleteUser(Resource):
-    # @token_required
+    @jwt_required
     def delete(self, public_id):
 
         session_public_id = get_jwt_identity()
