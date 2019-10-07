@@ -12,7 +12,6 @@ from model.user import UserModel
 
 
 class NewAddress(Resource):
-    @jwt_required
     def post(self, public_id):
         data = request.get_json()
 
@@ -21,7 +20,7 @@ class NewAddress(Resource):
 
         user_data = UserModel.query.filter_by(public_id=public_id).first()
 
-        new_address = AddressModel(public_id=str(uuid.uuid4()),
+        new_address = AddressModel(address_public_id=str(uuid.uuid4()),
                                     federal_unity=data['federal_unity'],
                                     postal_code=data['postal_code'],
                                     city=data['city'],
@@ -36,7 +35,7 @@ class NewAddress(Resource):
 
         return jsonify({'message':'Successfully registred an Address.'},
                         {
-                        'public_id': new_address.public_id,
+                        'public_id': new_address.address_public_id,
                         'federal_unity': new_address.federal_unity,
                         'postal_code': new_address.postal_code,
                         'city': new_address.city,
@@ -48,19 +47,19 @@ class NewAddress(Resource):
 
 class UpdateAddress(Resource):
     @jwt_required
-    def put(self):
-
-        public_id = get_jwt_identity()
+    def put(self, address_public_id):
 
         data = request.get_json()
-        address = AddressModel.query.filter_by(public_id=public_id).first()
+        public_id = get_jwt_identity()
+
+        address = AddressModel.query.filter_by(address_public_id=address_public_id).first()
 
         if not address:
             return jsonify({'message':"You must inform the address['public_id']"}, 404)
 
         user_data = UserModel.query.filter_by(public_id=public_id).first()
 
-        new_address = AddressModel(public_id=str(uuid.uuid4()),
+        new_address = AddressModel(address_public_id=str(uuid.uuid4()),
                                     federal_unity=data['federal_unity'],
                                     postal_code=data['postal_code'],
                                     city=data['city'],
@@ -69,13 +68,21 @@ class UpdateAddress(Resource):
                                     number=data['number'],
                                     phone=data['phone'],
                                     user_id=user_data.id)
-
-        address += new_address
+        AddressModel.query.filter_by(address_public_id=address_public_id).update({
+            'address_public_id':new_address.address_public_id,
+            'federal_unity':new_address.federal_unity,
+            'postal_code':new_address.postal_code,
+            'city':new_address.city,
+            'district':new_address.district,
+            'street':new_address.street,
+            'number':new_address.number,
+            'phone':new_address.phone
+        })
         db.session.commit()
 
         return jsonify({'message':'Address updated successfully..'},
                         {
-                        'public_id': new_address.public_id,
+                        'public_id': new_address.address_public_id,
                         'federal_unity': new_address.federal_unity,
                         'postal_code': new_address.postal_code,
                         'city': new_address.city,
@@ -84,4 +91,3 @@ class UpdateAddress(Resource):
                         'number': new_address.number,
                         'phone': new_address.phone,
                         }, 201)
-#TODO: verificar pq este método nao tem acesso ao current_user com o public_id

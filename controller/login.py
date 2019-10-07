@@ -28,7 +28,7 @@ class Login(Resource):
 
         if check_password_hash(user.password, data['password']):
             token = create_access_token(identity=user.public_id)
-            return jsonify({
+            return jsonify({'public_id':user.public_id,
                     'name': user.name,
                     'username': user.username,
                     'email': user.email

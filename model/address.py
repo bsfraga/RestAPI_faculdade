@@ -4,7 +4,7 @@ class AddressModel(db.Model):
     __tablename__ = 'address'
 
     id = db.Column(db.Integer, primary_key=True)
-    public_id = db.Column(db.String(80), nullable=False, unique=True)
+    address_public_id = db.Column(db.String(80), nullable=False, unique=True)
     federal_unity = db.Column(db.String(2), nullable=False)
     postal_code = db.Column(db.String(9), nullable=False)
     city = db.Column(db.String(64), nullable=False)

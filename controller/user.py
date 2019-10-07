@@ -47,7 +47,7 @@ class GetUsers(Resource):
         public_id = get_jwt_identity()
 
         '''
-        TODO: terminar de implementar este método
+        TODO: Decidir scopo de visão de todos users
         '''
 
         #recebe todas rows de users cadastrado
@@ -93,9 +93,11 @@ class GetUser(Resource):
         session_public_id = get_jwt_identity()
 
         current_user = UserModel.query.filter_by(public_id=public_id).first()
-
-        if not current_user.admin:
-            return jsonify({'message':'You are not allow to perform this action.'})
+        '''
+        Não sei se deixo essa validao >.<
+        '''
+        # if not current_user.admin:
+        #     return jsonify({'message':'You are not allow to perform this action.'})
 
         user = UserModel.query.filter_by(public_id=public_id).first()
 
@@ -103,7 +105,7 @@ class GetUser(Resource):
         
         if user_address:
             address = {}
-            address['public_id'] = user_address.public_id
+            address['address_public_id'] = user_address.address_public_id
             address['federal_unity'] = user_address.federal_unity
             address['postal_code'] = user_address.postal_code
             address['city'] = user_address.city

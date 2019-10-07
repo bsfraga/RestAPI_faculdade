@@ -37,7 +37,7 @@ api.add_resource(Login, '/signin')
 #--------------------------User-------------------------------#
 api.add_resource(NewUser, '/signup')
 api.add_resource(NewAddress, '/signup_address/<public_id>')
-api.add_resource(UpdateAddress, '/update_address/<public_id>')
+api.add_resource(UpdateAddress, '/update_address/<address_public_id>')
 api.add_resource(GetUsers, '/users')
 api.add_resource(GetUser, '/user/<public_id>')
 api.add_resource(PromoteUser, '/user/<public_id>')
