@@ -13,4 +13,4 @@ class AddressModel(db.Model):
     number = db.Column(db.Integer, nullable=False)
     phone = db.Column(db.BigInteger, nullable=False)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_public_id = db.Column(db.String(80), db.ForeignKey('user.public_id'), nullable=False)

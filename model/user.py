@@ -1,6 +1,7 @@
 from controller.sql_alchemy import db
 
 from model.address import AddressModel
+from model.person import PersonModel
 
 class UserModel(db.Model):
     __tablename__ = 'user'
@@ -13,5 +14,17 @@ class UserModel(db.Model):
     password = db.Column(db.String(80), nullable=False)
     admin = db.Column(db.Boolean)
 
+    #   one to many relationship
     address = db.relationship(AddressModel, backref='address', lazy=True)
 
+    #   one to one relationship
+    person_type = db.relationship(PersonModel, lazy=True, backref='user', uselist=False)
+    
+
+'''
+TODO:Remapear atributos de pessoa
+Adicionar:
+
+CPF, CNPJ
+    -Adicionar regra de negocio para TIPO de pessoa
+'''

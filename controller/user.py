@@ -61,7 +61,7 @@ class GetUsers(Resource):
             for address_row in adresses:
                 if user_row.id == address_row.user_id:
                     address = {}
-                    address['public_id'] = address_row.public_id
+                    address['address_public_id'] = address_row.address_public_id
                     address['federal_unity'] = address_row.federal_unity
                     address['postal_code'] = address_row.postal_code
                     address['city'] = address_row.city
@@ -92,7 +92,7 @@ class GetUser(Resource):
 
         session_public_id = get_jwt_identity()
 
-        current_user = UserModel.query.filter_by(public_id=public_id).first()
+        current_user = UserModel.query.filter_by(public_id=session_public_id).first()
         '''
         Não sei se deixo essa validao >.<
         '''
@@ -134,10 +134,12 @@ class PromoteUser(Resource):
 
         session_public_id = get_jwt_identity()
 
-        current_user = UserModel.query.filter_by(public_id=public_id).first()
+        current_user = UserModel.query.filter_by(public_id=session_public_id).first()
 
         if not current_user.admin:
             return jsonify({'message':'You are not allow to perform this action.'})
+        
+        db.session.close()
 
         user = UserModel.query.filter_by(public_id=public_id).first()
 
@@ -147,7 +149,7 @@ class PromoteUser(Resource):
         user.admin = True
         db.session.commit()
 
-        return jsonify({'message': f'The user {user.name} has been promoted to Admin.'}, 404)
+        return jsonify({'message': f'The user {user.name} has been promoted to Admin.'}, 201)
 
 
 
@@ -157,16 +159,19 @@ class DeleteUser(Resource):
 
         session_public_id = get_jwt_identity()
 
-        current_user = UserModel.query.filter_by(public_id=public_id).first()
+        current_user = UserModel.query.filter_by(public_id=session_public_id).first()
 
         if not current_user.admin:
-            return jsonify({'message':'You are not allow to perform this action.'})
+            return jsonify({'message':'You are not allowed to perform this action.'})
+        db.session.close()
 
         user = UserModel.query.filter_by(public_id=public_id).first()
 
+        user_address = AddressModel.query.filter_by(user_id=user.id).first()
         if not user:
-            return jsonify({'message':'No user found with this public id on database.'})
+            return jsonify({'message':'No user found with this "public_id" on database.'})
 
+        db.session.delete(user_address)            
         db.session.delete(user)
         db.session.commit()
 
