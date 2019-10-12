@@ -18,7 +18,6 @@ class NewAddress(Resource):
         if public_id == None:
             return jsonify({'message': 'You must inform a "public_id" so the address can be linked to the user.'}, 400)
 
-        user_data = UserModel.query.filter_by(public_id=public_id).first()
 
         new_address = AddressModel(address_public_id=str(uuid.uuid4()),
                                     federal_unity=data['federal_unity'],
@@ -28,22 +27,12 @@ class NewAddress(Resource):
                                     street=data['street'],
                                     number=data['number'],
                                     phone=data['phone'],
-                                    user_id=user_data.id)
+                                    user_public_id=public_id)
         
         db.session.add(new_address)
         db.session.commit()
 
-        return jsonify({'message':'Successfully registred an Address.'},
-                        {
-                        'public_id': new_address.address_public_id,
-                        'federal_unity': new_address.federal_unity,
-                        'postal_code': new_address.postal_code,
-                        'city': new_address.city,
-                        'district': new_address.district,
-                        'street': new_address.street,
-                        'number': new_address.number,
-                        'phone': new_address.phone,
-                        }, 201)
+        return jsonify({'message':'Successfully registred an Address to an User.'},{'address': new_address.json()}, {'status code': 201})
 
 class UpdateAddress(Resource):
     @jwt_required

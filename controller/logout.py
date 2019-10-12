@@ -1,5 +1,5 @@
 from flask_jwt_extended import get_raw_jwt, jwt_required
-
+from flask_restful import Resource
 from controller.blacklist import BLACKLIST
 
 

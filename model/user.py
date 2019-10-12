@@ -19,12 +19,3 @@ class UserModel(db.Model):
 
     #   one to one relationship
     person_type = db.relationship(PersonModel, lazy=True, backref='user', uselist=False)
-    
-
-'''
-TODO:Remapear atributos de pessoa
-Adicionar:
-
-CPF, CNPJ
-    -Adicionar regra de negocio para TIPO de pessoa
-'''

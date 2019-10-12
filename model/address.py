@@ -1,5 +1,6 @@
 from controller.sql_alchemy import db
 
+
 class AddressModel(db.Model):
     __tablename__ = 'address'
 
@@ -13,4 +14,18 @@ class AddressModel(db.Model):
     number = db.Column(db.Integer, nullable=False)
     phone = db.Column(db.BigInteger, nullable=False)
 
-    user_public_id = db.Column(db.String(80), db.ForeignKey('user.public_id'), nullable=False)
+    user_public_id = db.Column(db.String(80), db.ForeignKey(
+        'user.public_id'), nullable=False)
+
+    def json(self):
+        return {
+            'address_public_id': self.address_public_id,
+            'federal_unity': self.federal_unity,
+            'postal_code': self.postal_code,
+            'city': self.city,
+            'district': self.district,
+            'street': self.street,
+            'number': self.number,
+            'phone': self.phone,
+            'user_public_id': self.user_public_id
+        }

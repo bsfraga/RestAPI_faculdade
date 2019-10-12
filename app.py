@@ -5,11 +5,26 @@ from flask_restful import Api
 from controller.address import NewAddress, UpdateAddress
 from controller.blacklist import BLACKLIST
 from controller.login import Login
+from controller.logout import Logout
 from controller.user import DeleteUser, GetUser, GetUsers, NewUser, PromoteUser
+from controller.person import NewPerson
+import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+''' MYSQL Configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:25885c@192.168.0.6:3306/api_faculdade_v2'
+'''
+
+''' SQLite Configuration
+import os
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
+'''
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
 app.config['JWT_SECRET_KEY'] = 'DontTellAnyone'
 app.config['JWT_BLACKLIST_ENABLED'] = True
 
@@ -28,15 +43,17 @@ def invalid_token():
     return jsonify({'message':'You are not logged in.'}), 401
 #-------------------------------------------------------------#
 
+
 #--------------------------Endpoints--------------------------#
 api = Api(app)
-
 #--------------------------Login/Logout-----------------------#
 api.add_resource(Login, '/signin')
-
-#--------------------------User-------------------------------#
+api.add_resource(Logout, '/signout')
+#--------------------------New Register------------------------#
 api.add_resource(NewUser, '/signup')
 api.add_resource(NewAddress, '/signup_address/<public_id>')
+api.add_resource(NewPerson, '/new_person/<public_id>')
+#--------------------------User Actions------------------------#
 api.add_resource(UpdateAddress, '/update_address/<address_public_id>')
 api.add_resource(GetUsers, '/users')
 api.add_resource(GetUser, '/user/<public_id>')
