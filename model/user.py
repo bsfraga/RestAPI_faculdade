@@ -19,3 +19,12 @@ class UserModel(db.Model):
 
     #   one to one relationship
     person_type = db.relationship(PersonModel, lazy=True, backref='user', uselist=False)
+
+    def json(self):
+        return {
+            'public_id': self.public_id,
+            'name': self.name,
+            'username': self.username,
+            'email': self.email
+        } 
+

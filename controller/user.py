@@ -36,13 +36,8 @@ class NewUser(Resource):
         db.session.commit()
 
         return jsonify({'message': 'User successfully created.'},
-                       {
-            'public_id': new_user.public_id,
-            'name': new_user.name,
-            'username': new_user.username,
-            'email': new_user.email,
-            'admin': new_user.admin
-        })
+                       {new_user.json()},
+                       {'status code: 201'})
 
 
 class GetUsers(Resource):

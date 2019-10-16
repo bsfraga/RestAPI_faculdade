@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"sqltools.connections": [
+			{
+				"askForPassword": true,
+				"database": ".\\db.sqlite",
+				"dialect": "SQLite",
+				"name": "rest_api_faculdadev2"
+			}
+		],
+		"sqltools.useNodeRuntime": true
+	}
+}
