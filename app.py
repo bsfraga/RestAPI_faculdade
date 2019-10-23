@@ -4,9 +4,8 @@ from flask_restful import Api
 
 from controller.address import NewAddress, UpdateAddress
 from controller.blacklist import BLACKLIST
-from controller.login import Login
-from controller.logout import Logout
-from controller.user import DeleteUser, GetUser, GetUsers, NewUser, PromoteUser
+from controller.session import Login, Logout
+from controller.user import GetUser, GetUsers, NewUser, UserAccountStatus
 from controller.person import NewPerson
 import os
 
@@ -57,8 +56,8 @@ api.add_resource(NewPerson, '/new_person/<public_id>')
 api.add_resource(UpdateAddress, '/update_address/<address_public_id>')
 api.add_resource(GetUsers, '/users')
 api.add_resource(GetUser, '/user/<public_id>')
-api.add_resource(PromoteUser, '/user/<public_id>')
-api.add_resource(DeleteUser, '/user/<public_id>')
+api.add_resource(UserAccountStatus, '/user/<public_id>')
+
 #-------------------------------------------------------------#
 
 if __name__ == '__main__':
