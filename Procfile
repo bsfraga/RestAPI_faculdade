@@ -1,1 +1,0 @@
-web: gunicorn trab_faculdade_v2.wsgi
