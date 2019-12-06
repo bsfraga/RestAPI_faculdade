@@ -15,8 +15,7 @@ class PersonModel(db.Model):
     type_person = db.Column(db.Enum(TypePerson))
     rg = db.Column(db.String(18), nullable=False, unique=True)
 
-    user_public_id = db.Column(db.String(80), db.ForeignKey(
-        'user.public_id'), nullable=False)
+    user_public_id = db.Column(db.String(80), db.ForeignKey('user.public_id'), nullable=False)
 
     def json(self):
         return {'cpf_cnpj': self.cpf_cnpj,

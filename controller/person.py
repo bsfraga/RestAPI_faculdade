@@ -14,7 +14,7 @@ class NewPerson(Resource):
                 public_id=public_id).first()
 
             if check_data.user_public_id:
-                return make_response(jsonify({'message': 'Person data already informed.'},
+                return make_response(jsonify({'message': 'Person data already created.'},
                                {'status_code': 400}), 400)
 
             data = request.get_json()

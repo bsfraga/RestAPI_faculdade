@@ -1,5 +1,4 @@
 import uuid
-from functools import wraps
 
 import jwt
 from flask import jsonify, request, make_response
@@ -32,6 +31,12 @@ class NewUser(Resource):
             '''
 
             data = request.get_json()
+
+            already_exists = UserModel.query.filter_by(email=data['email']).first()
+
+            if already_exists:
+                return make_response(jsonify({'message': 'The account already exists on the system.'}, {'status_code': 200}), 200)
+
 
             hashed_password = generate_password_hash(
                 data['password'], method='sha256')
